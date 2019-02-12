@@ -7,13 +7,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class noRightTM extends Auto_Routines {
     @Override
     public void runOpMode() {
-        // INITIALIZE EVERYTHING
+        // Initialize Everything...
         Auto_Init();
 
-        // RAISE LIFT MOTOR TO RELEASE LATCH
+        // Raise Lift Motor To Release Latch
         raiseLiftMotor();
 
-        // DRIVE ROBOT FORWARD 500 TICKS TO ALLOW LIFT TO LOWER
+        // Drive Robot Forward 500 Ticks To Free From Latch
         moveDriveEncoder(500, 500, .2);
         while(driveMotorsBusy() && !isStopRequested()){
             telemetry.addData("Status", "Driving Forward");
@@ -21,8 +21,8 @@ public class noRightTM extends Auto_Routines {
         }
         setDriveMotors(0);
 
-        // TESTING IF NEW ROUTINE WORKS USING GOLD SAMPLE
-        noRightTM();
+        // Testing If Boomerang Routine Works
+        boomerangAutoTM();
 
         // LOWER LIFT MOTOR TO RETURN TO NORMAL SIZE
         lowerLiftMotor();

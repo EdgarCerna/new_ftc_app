@@ -6,6 +6,9 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 abstract public class Auto_Routines extends LinearOpMode {
     CompetitionHardware robot = new CompetitionHardware();
     public GoldAlignDetector detector;
@@ -15,6 +18,10 @@ abstract public class Auto_Routines extends LinearOpMode {
     static boolean newCommand = true;
     static double eOld = 0;
     char goldPos = 'U';
+
+    // Init ArrayLists...
+    static ArrayList<Double> leftArray = new ArrayList<Double>(5);
+    static ArrayList<Double> rightArray = new ArrayList<Double>(5);
 
     public void Auto_Init() {
         robot.init(hardwareMap);
@@ -110,6 +117,37 @@ abstract public class Auto_Routines extends LinearOpMode {
         robot.rearLeftDrive.setPower(speed);
         robot.frontRightDrive.setPower(speed);
         robot.rearRightDrive.setPower(speed);
+    }
+
+    public void boomerangAutoTM() {
+        // PID Drive Towards Gold...
+        stopResetDriveEncoders();
+        while (robot.frontLeftDrive.getCurrentPosition() < 2500 && robot.frontRightDrive.getCurrentPosition() < 2500) {
+            pidDriveTowardGold();
+        }
+
+        // Drive Forward 700 Encoder Ticks To Move Gold
+        stopResetDriveEncoders();
+        moveDriveEncoder(700, 700, .6);
+        while(driveMotorsBusy() && !isStopRequested()){
+            telemetry.addData("Status", "Driving Forward To Hit Gold");
+            telemetry.addData("goldPos", goldPos);
+            telemetry.update();
+        }
+        setDriveMotors(0);
+
+        // Drive Backward 700 Encoder Ticks To Move Away From Gold
+        stopResetDriveEncoders();
+        moveDriveEncoder(-700, -700, .6);
+        while(driveMotorsBusy() && !isStopRequested()){
+            telemetry.addData("Status", "Driving Backward Away From Gold");
+            telemetry.addData("goldPos", goldPos);
+            telemetry.update();
+        }
+        setDriveMotors(0);
+
+        // Boomerang Backwards To Original Position
+        boomerangPID();
     }
 
     // NEEDS TO BE FINISHED
@@ -418,6 +456,86 @@ abstract public class Auto_Routines extends LinearOpMode {
         robot.tmServo.setPosition(1);
         sleep(500);
         robot.tmServo.setPosition(0);
+    }
+
+    public void newPID(){
+        // Local Variables...
+        final int target = 320;
+        double x = detector.getXPosition();
+        double e, de, ie = 0;
+        double kp = 0.002, kd = 0, ki = 0;
+        double leftPower, rightPower, turnSpeed;
+        int cnt = 0;
+
+        e = x - target;
+        if (newCommand == true) {
+            de = 0;
+            newCommand = false;
+
+            if (e > 80) {
+                goldPos = 'R';
+            }
+            if (e < -80) {
+                goldPos = 'L';
+            }
+            if (e >= -80 && e <= 80) {
+                goldPos = 'C';
+            }
+
+            telemetry.addData("goldPos", goldPos);
+            telemetry.update();
+        }
+        else
+        {
+            de = e - eOld;  //difference
+        }
+        ie += e;            //integration
+
+        eOld = e;
+        turnSpeed = kp * e + kd * de + ki * ie;
+
+        if (turnSpeed > 0.3)
+        {
+            turnSpeed = 0.3;
+        }
+        else if (turnSpeed < -0.3)
+        {
+            turnSpeed = -0.3;
+        }
+        if (turnSpeed > 0) {
+            leftPower = DRIVE_SPEED + turnSpeed;
+            rightPower = DRIVE_SPEED - turnSpeed / 2;
+        }
+        else
+        {
+            leftPower = DRIVE_SPEED + turnSpeed / 2;
+            rightPower = DRIVE_SPEED - turnSpeed;
+        }
+
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        robot.frontLeftDrive.setPower(leftPower);
+        robot.rearLeftDrive.setPower(leftPower);
+        robot.frontRightDrive.setPower(rightPower);
+        robot.rearRightDrive.setPower(rightPower);
+
+        leftArray.add(leftPower);
+        rightArray.add(rightPower);
+    }
+
+    public void boomerangPID(){
+        Collections.reverse(leftArray);
+        Collections.reverse(rightArray);
+        for (int i=0; i<leftArray.size() && i<leftArray.size(); i++) {
+            robot.frontLeftDrive.setPower(leftArray.get(i));
+            robot.rearLeftDrive.setPower(leftArray.get(i));
+            robot.frontRightDrive.setPower(rightArray.get(i));
+            robot.rearRightDrive.setPower(rightArray.get(i));
+        }
+        setDriveMotors(0.0);
     }
 
     public void pidDriveTowardGold(){
