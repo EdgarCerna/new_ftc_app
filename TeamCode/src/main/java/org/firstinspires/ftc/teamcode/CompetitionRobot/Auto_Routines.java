@@ -6,8 +6,14 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 
 abstract public class Auto_Routines extends LinearOpMode {
     CompetitionHardware robot = new CompetitionHardware();
@@ -20,8 +26,8 @@ abstract public class Auto_Routines extends LinearOpMode {
     char goldPos = 'U';
 
     // Init ArrayLists...
-    static ArrayList<Double> leftArray = new ArrayList<Double>(5);
-    static ArrayList<Double> rightArray = new ArrayList<Double>(5);
+    ArrayList<Double> leftArray = new ArrayList<Double>(0);
+    ArrayList<Double> rightArray = new ArrayList<Double>(0);
 
     public void Auto_Init() {
         robot.init(hardwareMap);
@@ -119,6 +125,73 @@ abstract public class Auto_Routines extends LinearOpMode {
         robot.rearRightDrive.setPower(speed);
     }
 
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    void composeImuTelemetry() {
+
+        // At the beginning of each telemetry update, grab a bunch of data
+        // from the IMU that we will then display in separate lines.
+        telemetry.addAction(new Runnable() { @Override public void run()
+        {
+            // Acquiring the angles is relatively expensive; we don't want
+            // to do that in each of the three items that need that info, as that's
+            // three times the necessary expense.
+            robot.angles   = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            robot.gravity  = robot.imu.getGravity();
+        }
+        });
+
+        telemetry.addLine()
+                .addData("status", new Func<String>() {
+                    @Override public String value() {
+                        return robot.imu.getSystemStatus().toShortString();
+                    }
+                })
+                .addData("calib", new Func<String>() {
+                    @Override public String value() {
+                        return robot.imu.getCalibrationStatus().toString();
+                    }
+                });
+
+        telemetry.addLine()
+                .addData("heading", new Func<String>() {
+                    @Override public String value() {
+                        return formatAngle(robot.angles.angleUnit, robot.angles.firstAngle);
+                    }
+                })
+                .addData("roll", new Func<String>() {
+                    @Override public String value() {
+                        return formatAngle(robot.angles.angleUnit, robot.angles.secondAngle);
+                    }
+                })
+                .addData("pitch", new Func<String>() {
+                    @Override public String value() {
+                        return formatAngle(robot.angles.angleUnit, robot.angles.thirdAngle);
+                    }
+                });
+
+        telemetry.addLine()
+                .addData("grvty", new Func<String>() {
+                    @Override public String value() {
+                        return robot.gravity.toString();
+                    }
+                })
+                .addData("mag", new Func<String>() {
+                    @Override public String value() {
+                        return String.format(Locale.getDefault(), "%.3f",
+                                Math.sqrt(robot.gravity.xAccel*robot.gravity.xAccel
+                                        + robot.gravity.yAccel*robot.gravity.yAccel
+                                        + robot.gravity.zAccel*robot.gravity.zAccel));
+                    }
+                });
+    }
+
     public void boomerangAutoTM() {
         // PID Drive Towards Gold...
         stopResetDriveEncoders();
@@ -148,6 +221,76 @@ abstract public class Auto_Routines extends LinearOpMode {
 
         // Boomerang Backwards To Original Position
         boomerangPID();
+    }
+
+    public void turnLeftUntilAngle(int angle) {
+        stopResetDriveEncoders();
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        while (robot.angles.firstAngle < angle) {
+            robot.frontLeftDrive.setPower(-.2);
+            robot.rearLeftDrive.setPower(-.2);
+            robot.frontRightDrive.setPower(.2);
+            robot.rearRightDrive.setPower(.2);
+
+            robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+            telemetry.addData("firstAngle", robot.angles.firstAngle);
+            telemetry.update();
+
+        }
+        setDriveMotors(0);
+    }
+
+    public void turnRightUntilAngle(int angle) {
+        stopResetDriveEncoders();
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        while (robot.angles.firstAngle < angle) {
+            robot.frontLeftDrive.setPower(.2);
+            robot.rearLeftDrive.setPower(.2);
+            robot.frontRightDrive.setPower(-.2);
+            robot.rearRightDrive.setPower(-.2);
+
+            robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+            telemetry.addData("firstAngle", robot.angles.firstAngle);
+            telemetry.update();
+
+        }
+        setDriveMotors(0);
+    }
+
+    public void deployArm() {
+        stopResetDriveEncoders();
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        while (robot.frontLeftDrive.getCurrentPosition() < 3500) {
+            robot.frontLeftDrive.setPower(.2);
+            robot.rearLeftDrive.setPower(-.2);
+            robot.frontRightDrive.setPower(-.2);
+            robot.rearRightDrive.setPower(.2);
+
+            robot.armMotor.setPower(-1);
+
+            composeImuTelemetry();
+            telemetry.update();
+        }
+        setDriveMotors(0);
+        robot.armMotor.setPower(0);
     }
 
     // NEEDS TO BE FINISHED
@@ -529,11 +672,12 @@ abstract public class Auto_Routines extends LinearOpMode {
     public void boomerangPID(){
         Collections.reverse(leftArray);
         Collections.reverse(rightArray);
-        for (int i=0; i<leftArray.size() && i<leftArray.size(); i++) {
-            robot.frontLeftDrive.setPower(leftArray.get(i));
-            robot.rearLeftDrive.setPower(leftArray.get(i));
-            robot.frontRightDrive.setPower(rightArray.get(i));
-            robot.rearRightDrive.setPower(rightArray.get(i));
+
+        for (int i=0; i<leftArray.size(); i++) {
+            robot.frontLeftDrive.setPower(leftArray.get(i) * -1);
+            robot.rearLeftDrive.setPower(leftArray.get(i) * -1);
+            robot.frontRightDrive.setPower(rightArray.get(i) * -1);
+            robot.rearRightDrive.setPower(rightArray.get(i) * -1);
         }
         setDriveMotors(0.0);
     }

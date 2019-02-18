@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.CompetitionRobot;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name="CompetitionDriverControlled", group="TeleOp")
 
@@ -22,6 +23,10 @@ public class CompetitionDriverControlled extends OpMode {
     //RUN ONCE ON start()
     @Override
     public void start() {
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     //LOOP ON start()
