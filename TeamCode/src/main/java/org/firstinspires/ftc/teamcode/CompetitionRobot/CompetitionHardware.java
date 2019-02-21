@@ -27,6 +27,7 @@ public class CompetitionHardware
 
     //INSTANTIATE SERVOS
     public Servo tmServo = null;
+    public Servo intakeServo = null;
 
     //INSTANTIATE SENSORS
     public BNO055IMU imu;
@@ -49,6 +50,7 @@ public class CompetitionHardware
 
         //DEFINE SERVOS
         tmServo = hardwareMap.get(Servo.class, "tmServo");
+        intakeServo = hardwareMap.get(Servo.class, "intakeServo");
 
         //SET MOTOR DIRECTION
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.CompetitionRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="CompetitionDriverControlled", group="TeleOp")
 
@@ -13,6 +14,7 @@ public class CompetitionDriverControlled extends OpMode {
 
     // GLOBAL VARIABLES
     static boolean modeToggle = true;
+    static boolean intakeToggle = true;
 
     //RUN CODE ONCE ON init()
     @Override
@@ -47,6 +49,28 @@ public class CompetitionDriverControlled extends OpMode {
         }
         else if (gamepad1.a) {
             modeToggle = true;
+        }
+
+        if (gamepad2.right_bumper) {
+            intakeToggle = true;
+        }
+        else if (gamepad2.left_bumper) {
+            intakeToggle = false;
+        }
+
+        if (intakeToggle == true) {
+            robot.intakeServo.setPosition(1);
+        }
+        else {
+            robot.intakeServo.setPosition(0.5);
+        }
+
+        // Change Servo Direction
+        if (gamepad2.y) {
+            robot.intakeServo.setDirection(Servo.Direction.REVERSE);
+        }
+        else if (gamepad2.a) {
+            robot.intakeServo.setDirection(Servo.Direction.FORWARD);
         }
 
         // ARM LIFT CODE
