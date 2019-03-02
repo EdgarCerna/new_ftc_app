@@ -17,6 +17,13 @@ public class testDeployArm extends Auto_Routines {
         // Initialize Everything...
         Auto_Init();
 
-        deployArm();
+        hoverArm(100, 0.3);
+        while(robot.armMotor.isBusy() && !isStopRequested()){
+            telemetry.addData("Status", "Lifting Arm");
+            telemetry.addData("Encoder:", robot.armMotor.getCurrentPosition());
+            telemetry.update();
+        }
+        robot.armMotor.setPower(0);
+        //deployArm(3500);
     }
 }

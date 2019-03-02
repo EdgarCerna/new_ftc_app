@@ -41,7 +41,11 @@ public class CompetitionDriverControlled extends OpMode {
         double rightPowerT = leftTrigger + rightTrigger - rightStickX;
         double leftPowerT = leftTrigger + rightTrigger + rightStickX;
         // gamepad2 VARIABLES
-        double armPower = gamepad2.right_trigger - gamepad2.left_trigger;
+        double armPower = gamepad2.right_trigger - gamepad2.left_trigger * 0.5;
+
+        // Lower Arm Power Going Down By Half
+//        if (armPower < 0)
+//            armPower *= .5;
 
         // SET MODE NUMBER TO EITHER 0 OR 1
         if (gamepad1.b) {

@@ -223,28 +223,49 @@ abstract public class Auto_Routines extends LinearOpMode {
         boomerangPID();
     }
 
-    public void turnLeftUntilAngle(int angle) {
-        stopResetDriveEncoders();
-        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        while (robot.angles.firstAngle < angle) {
-            robot.frontLeftDrive.setPower(-.2);
-            robot.rearLeftDrive.setPower(-.2);
-            robot.frontRightDrive.setPower(.2);
-            robot.rearRightDrive.setPower(.2);
-
+    public void turnUntilAngle(int angle) {
+        do {
+            //VARIABLES
+            final int target = angle;
             robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            double x = robot.angles.firstAngle;
+            double e, de, ie = 0;
+            double kp = 0.04, kd = 0, ki = 0;
+            double leftPower, rightPower, turnSpeed;
+            int cnt = 0;
 
-            telemetry.addData("firstAngle", robot.angles.firstAngle);
-            telemetry.update();
+            e = x - target;
+            if (newCommand == true) {
+                de = 0;
+                newCommand = false;
+            } else {
+                de = e - eOld;  //difference
+            }
+            ie += e;            //integration
 
-        }
-        setDriveMotors(0);
+            eOld = e;
+            turnSpeed = kp * e + kd * de + ki * ie;
+
+            if (turnSpeed > 0.3) {
+                turnSpeed = 0.3;
+            } else if (turnSpeed < -0.3) {
+                turnSpeed = -0.3;
+            }
+
+
+            leftPower = turnSpeed;
+            rightPower = -turnSpeed;
+
+            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            robot.frontLeftDrive.setPower(leftPower);
+            robot.rearLeftDrive.setPower(leftPower);
+            robot.frontRightDrive.setPower(rightPower);
+            robot.rearRightDrive.setPower(rightPower);
+        } while (robot.angles.firstAngle != angle);
     }
 
     public void turnRightUntilAngle(int angle) {
@@ -256,11 +277,19 @@ abstract public class Auto_Routines extends LinearOpMode {
 
         robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-        while (robot.angles.firstAngle < angle) {
-            robot.frontLeftDrive.setPower(.2);
-            robot.rearLeftDrive.setPower(.2);
-            robot.frontRightDrive.setPower(-.2);
-            robot.rearRightDrive.setPower(-.2);
+        while (robot.angles.firstAngle != angle) {
+            if (robot.angles.firstAngle > angle) {
+                robot.frontLeftDrive.setPower(-.2);
+                robot.rearLeftDrive.setPower(-.2);
+                robot.frontRightDrive.setPower(.2);
+                robot.rearRightDrive.setPower(.2);
+            }
+            else if (robot.angles.firstAngle < angle) {
+                robot.frontLeftDrive.setPower(.2);
+                robot.rearLeftDrive.setPower(.2);
+                robot.frontRightDrive.setPower(-.2);
+                robot.rearRightDrive.setPower(-.2);
+            }
 
             robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
@@ -271,26 +300,56 @@ abstract public class Auto_Routines extends LinearOpMode {
         setDriveMotors(0);
     }
 
-    public void deployArm() {
+    public void strafe(int encoderCount) {
         stopResetDriveEncoders();
         robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        while (robot.frontLeftDrive.getCurrentPosition() < 3500) {
-            robot.frontLeftDrive.setPower(.2);
-            robot.rearLeftDrive.setPower(-.2);
-            robot.frontRightDrive.setPower(-.2);
-            robot.rearRightDrive.setPower(.2);
-
-            robot.armMotor.setPower(-1);
-
-            composeImuTelemetry();
-            telemetry.update();
+        while (robot.frontLeftDrive.getCurrentPosition() != encoderCount) {
+            if (robot.frontLeftDrive.getCurrentPosition() < encoderCount) {
+                robot.frontLeftDrive.setPower(.3);
+                robot.rearLeftDrive.setPower(-.3);
+                robot.frontRightDrive.setPower(-.3);
+                robot.rearRightDrive.setPower(.3);
+            } else if (robot.frontLeftDrive.getCurrentPosition() > encoderCount) {
+                robot.frontLeftDrive.setPower(-.3);
+                robot.rearLeftDrive.setPower(.3);
+                robot.frontRightDrive.setPower(.3);
+                robot.rearRightDrive.setPower(-.3);
+            }
         }
         setDriveMotors(0);
-        robot.armMotor.setPower(0);
+    }
+
+    public void deployArm(int encoderCount) {
+        stopResetDriveEncoders();
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        while (robot.frontLeftDrive.getCurrentPosition() < encoderCount) {
+            robot.frontLeftDrive.setPower(.3);
+            robot.rearLeftDrive.setPower(-.3);
+            robot.frontRightDrive.setPower(-.3);
+            robot.rearRightDrive.setPower(.3);
+
+//            if (robot.frontLeftDrive.getCurrentPosition() < 1000)
+//                robot.armMotor.setPower(-0.6);
+//            else
+//                robot.armMotor.setPower(-0.2);
+        }
+        setDriveMotors(0);
+//        robot.armMotor.setPower(0);
+    }
+
+    public void hoverArm(int ticks, double speed) {
+        int pos = robot.armMotor.getCurrentPosition() + ticks;
+        robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.armMotor.setTargetPosition(pos);
+        robot.armMotor.setPower(speed);
     }
 
     // NEEDS TO BE FINISHED
@@ -596,8 +655,8 @@ abstract public class Auto_Routines extends LinearOpMode {
     }
 
     public void deployMarker() {
-        robot.tmServo.setPosition(1);
-        sleep(500);
+        robot.tmServo.setPosition(-1);
+        sleep(100);
         robot.tmServo.setPosition(0);
     }
 

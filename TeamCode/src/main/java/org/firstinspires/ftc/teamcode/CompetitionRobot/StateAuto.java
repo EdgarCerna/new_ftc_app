@@ -45,8 +45,8 @@ public class StateAuto extends Auto_Routines {
             }
             setDriveMotors(0);
 
-            // Turn 90 Degrees To Left Towards Wall
-            turnLeftUntilAngle(80);
+            // Turn Towards Wall To Avoid Minerals
+            turnUntilAngle(90);
 
             // Drive Robot Forward 4000 Ticks Towards Wall
             moveDriveEncoder(4000, 4000, .5);
@@ -56,7 +56,31 @@ public class StateAuto extends Auto_Routines {
             }
             setDriveMotors(0);
 
-            //turnRightUntilAngle(-45);
+            // Turn Right To Line Up With Wall
+            turnUntilAngle(45);
+
+            // Drive Robot Forward 500 Ticks To Bump Wall
+            moveDriveEncoder(500, 500, .5);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward");
+                telemetry.update();
+            }
+            setDriveMotors(0);
+
+            deployArm(3000);
+
+            deployMarker();
+
+            // Drive Robot Forward 500 Ticks To Bump Wall
+            moveDriveEncoder(200, 200, .5);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward");
+                telemetry.update();
+            }
+            setDriveMotors(0);
+
+            strafe(-3000);
+
         }
         else if (goldPos == 'C') {
 
@@ -66,6 +90,6 @@ public class StateAuto extends Auto_Routines {
         }
 
         // Reset Lift Motor To Original Size
-        lowerLiftMotor();
+        // lowerLiftMotor();
     }
 }
