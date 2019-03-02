@@ -83,10 +83,60 @@ public class StateAuto extends Auto_Routines {
 
         }
         else if (goldPos == 'C') {
+            // PID DRIVE TO GOLD
+            stopResetDriveEncoders();
+            while (robot.frontLeftDrive.getCurrentPosition() < 2500 && robot.frontRightDrive.getCurrentPosition() < 2500) {
+                pidDriveTowardGold();
+            }
 
+            // DRIVE FORWARD 2000 ENCODER TICKS TO MOVE AWAY FROM MINERALS
+            stopResetDriveEncoders();
+            moveDriveEncoder(2500, 2500, .6);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward To TM Drop Off");
+                telemetry.addData("goldPos", goldPos);
+                telemetry.update();
+            }
+            setDriveMotors(0);
+
+            deployMarker();
+
+            // DRIVE FORWARD 2000 ENCODER TICKS TO MOVE AWAY FROM MINERALS
+            stopResetDriveEncoders();
+            moveDriveEncoder(-2500, -2500, .6);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Backwards away from TM Drop Off");
+                telemetry.addData("goldPos", goldPos);
+                telemetry.update();
+            }
+            setDriveMotors(0);
         }
         else if (goldPos == 'R') {
+            // PID DRIVE TO GOLD
+            stopResetDriveEncoders();
+            while (robot.frontLeftDrive.getCurrentPosition() < 2500 && robot.frontRightDrive.getCurrentPosition() < 2500) {
+                pidDriveTowardGold();
+            }
 
+            // DRIVE FORWARD 2500 ENCODER TICKS TO HIT MINERALS
+            stopResetDriveEncoders();
+            moveDriveEncoder(2500, 2500, .6);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward To TM Drop Off");
+                telemetry.addData("goldPos", goldPos);
+                telemetry.update();
+            }
+            setDriveMotors(0);
+
+            // DRIVE BACKWARD 2500 ENCODER TICKS TO MOVE AWAY
+            stopResetDriveEncoders();
+            moveDriveEncoder(-2500, -2500, .6);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward To TM Drop Off");
+                telemetry.addData("goldPos", goldPos);
+                telemetry.update();
+            }
+            setDriveMotors(0);
         }
 
         // Reset Lift Motor To Original Size

@@ -336,13 +336,13 @@ abstract public class Auto_Routines extends LinearOpMode {
             robot.frontRightDrive.setPower(-.3);
             robot.rearRightDrive.setPower(.3);
 
-//            if (robot.frontLeftDrive.getCurrentPosition() < 1000)
-//                robot.armMotor.setPower(-0.6);
-//            else
-//                robot.armMotor.setPower(-0.2);
+            if (robot.frontLeftDrive.getCurrentPosition() < 1000)
+                robot.armMotor.setPower(-0.6);
+            else
+                robot.armMotor.setPower(-0.2);
         }
         setDriveMotors(0);
-//        robot.armMotor.setPower(0);
+        robot.armMotor.setPower(0);
     }
 
     public void hoverArm(int ticks, double speed) {
@@ -655,9 +655,8 @@ abstract public class Auto_Routines extends LinearOpMode {
     }
 
     public void deployMarker() {
-        robot.tmServo.setPosition(-1);
-        sleep(100);
-        robot.tmServo.setPosition(0);
+        robot.tmServo.setPosition(1);
+        sleep(1000);
     }
 
     public void newPID(){
