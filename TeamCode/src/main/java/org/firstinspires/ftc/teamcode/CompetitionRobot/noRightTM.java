@@ -21,9 +21,6 @@ public class noRightTM extends Auto_Routines {
         }
         setDriveMotors(0);
 
-        // Testing If Boomerang Routine Works
-        boomerangAutoTM();
-
         // LOWER LIFT MOTOR TO RETURN TO NORMAL SIZE
         lowerLiftMotor();
     }

@@ -79,16 +79,10 @@ public class StateAuto extends Auto_Routines {
             }
             setDriveMotors(0);
 
-            strafe(-3000);
+//            strafe(-3000);
 
         }
         else if (goldPos == 'C') {
-            // PID DRIVE TO GOLD
-            stopResetDriveEncoders();
-            while (robot.frontLeftDrive.getCurrentPosition() < 2500 && robot.frontRightDrive.getCurrentPosition() < 2500) {
-                pidDriveTowardGold();
-            }
-
             // DRIVE FORWARD 2000 ENCODER TICKS TO MOVE AWAY FROM MINERALS
             stopResetDriveEncoders();
             moveDriveEncoder(2500, 2500, .6);
@@ -112,12 +106,6 @@ public class StateAuto extends Auto_Routines {
             setDriveMotors(0);
         }
         else if (goldPos == 'R') {
-            // PID DRIVE TO GOLD
-            stopResetDriveEncoders();
-            while (robot.frontLeftDrive.getCurrentPosition() < 2500 && robot.frontRightDrive.getCurrentPosition() < 2500) {
-                pidDriveTowardGold();
-            }
-
             // DRIVE FORWARD 2500 ENCODER TICKS TO HIT MINERALS
             stopResetDriveEncoders();
             moveDriveEncoder(2500, 2500, .6);
