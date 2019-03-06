@@ -230,7 +230,10 @@ abstract public class Auto_Routines extends LinearOpMode {
             robot.rearLeftDrive.setPower(leftPower);
             robot.frontRightDrive.setPower(rightPower);
             robot.rearRightDrive.setPower(rightPower);
-        } while (robot.angles.firstAngle < angle + 2 || robot.angles.firstAngle > angle - 2);
+
+            telemetry.addData("Angle", x);
+            telemetry.update();
+        } while (robot.angles.firstAngle > angle + 1 || robot.angles.firstAngle < angle - 1);
     }
 
     public void turnRightUntilAngle(int angle) {
@@ -272,20 +275,24 @@ abstract public class Auto_Routines extends LinearOpMode {
         robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        while (robot.frontLeftDrive.getCurrentPosition() != encoderCount) {
-            if (robot.frontLeftDrive.getCurrentPosition() < encoderCount) {
-                robot.frontLeftDrive.setPower(.3);
-                robot.rearLeftDrive.setPower(-.3);
-                robot.frontRightDrive.setPower(-.3);
-                robot.rearRightDrive.setPower(.3);
-            } else if (robot.frontLeftDrive.getCurrentPosition() > encoderCount) {
-                robot.frontLeftDrive.setPower(-.3);
-                robot.rearLeftDrive.setPower(.3);
-                robot.frontRightDrive.setPower(.3);
-                robot.rearRightDrive.setPower(-.3);
-            }
-        }
-        setDriveMotors(0);
+        robot.frontLeftDrive.setPower(.3);
+        robot.rearLeftDrive.setPower(-.3);
+        robot.frontRightDrive.setPower(-.3);
+        robot.rearRightDrive.setPower(.3);
+
+//        while (driveMotorsBusy() && !isStopRequested()) {
+//            if (robot.frontLeftDrive.getCurrentPosition() < encoderCount) {
+//                robot.frontLeftDrive.setPower(.3);
+//                robot.rearLeftDrive.setPower(-.3);
+//                robot.frontRightDrive.setPower(-.3);
+//                robot.rearRightDrive.setPower(.3);
+//            } else if (robot.frontLeftDrive.getCurrentPosition() > encoderCount) {
+//                robot.frontLeftDrive.setPower(-.3);
+//                robot.rearLeftDrive.setPower(.3);
+//                robot.frontRightDrive.setPower(.3);
+//                robot.rearRightDrive.setPower(-.3);
+//            }
+//        }
     }
 
     public void deployArm(int encoderCount) {
@@ -301,13 +308,13 @@ abstract public class Auto_Routines extends LinearOpMode {
             robot.frontRightDrive.setPower(-.3);
             robot.rearRightDrive.setPower(.3);
 
-            if (robot.frontLeftDrive.getCurrentPosition() < 1000)
-                robot.armMotor.setPower(-0.6);
-            else
-                robot.armMotor.setPower(-0.2);
+//            if (robot.frontLeftDrive.getCurrentPosition() < 1000)
+//                robot.armMotor.setPower(-0.6);
+//            else
+//                robot.armMotor.setPower(-0.2);
         }
         setDriveMotors(0);
-        robot.armMotor.setPower(0);
+//        robot.armMotor.setPower(0);
     }
 
     public void hoverArm(int ticks, double speed) {

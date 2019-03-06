@@ -60,74 +60,99 @@ public class StateAuto extends Auto_Routines {
             turnUntilAngle(45);
 
             // Drive Robot Forward 500 Ticks To Bump Wall
-            moveDriveEncoder(500, 500, .5);
+            moveDriveEncoder(800, 800, .5);
             while(driveMotorsBusy() && !isStopRequested()){
                 telemetry.addData("Status", "Driving Forward");
                 telemetry.update();
             }
             setDriveMotors(0);
 
-            deployArm(3000);
+            deployArm(5000);
 
             deployMarker();
 
-            // Drive Robot Forward 500 Ticks To Bump Wall
-            moveDriveEncoder(200, 200, .5);
+            strafe(-4400);
             while(driveMotorsBusy() && !isStopRequested()){
-                telemetry.addData("Status", "Driving Forward");
+                telemetry.addData("Status", "Strafing");
                 telemetry.update();
             }
             setDriveMotors(0);
-
-//            strafe(-3000);
 
         }
         else if (goldPos == 'C') {
-            // DRIVE FORWARD 2000 ENCODER TICKS TO MOVE AWAY FROM MINERALS
+            // DRIVE BACKWARD 1000 ENCODER TICKS TO MOVE AWAY FROM MINERALS
             stopResetDriveEncoders();
-            moveDriveEncoder(2500, 2500, .6);
-            while(driveMotorsBusy() && !isStopRequested()){
-                telemetry.addData("Status", "Driving Forward To TM Drop Off");
-                telemetry.addData("goldPos", goldPos);
-                telemetry.update();
-            }
-            setDriveMotors(0);
-
-            deployMarker();
-
-            // DRIVE FORWARD 2000 ENCODER TICKS TO MOVE AWAY FROM MINERALS
-            stopResetDriveEncoders();
-            moveDriveEncoder(-2500, -2500, .6);
+            moveDriveEncoder(-1200, -1200, .6);
             while(driveMotorsBusy() && !isStopRequested()){
                 telemetry.addData("Status", "Driving Backwards away from TM Drop Off");
                 telemetry.addData("goldPos", goldPos);
                 telemetry.update();
             }
             setDriveMotors(0);
+
+            // Turn Towards Wall To Avoid Minerals
+            turnUntilAngle(90);
+
+            // Drive Robot Forward 4000 Ticks Towards Wall
+            moveDriveEncoder(4500, 4500, .5);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward");
+                telemetry.update();
+            }
+            setDriveMotors(0);
+
+            // Turn Right To Line Up With Wall
+            turnUntilAngle(45);
+
+            // Drive Robot Forward 1000 Ticks Towards Wall
+            moveDriveEncoder(1000, 1000, .5);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward");
+                telemetry.update();
+            }
+            setDriveMotors(0);
+
+            deployArm(5000);
+
+            deployMarker();
+
+            strafe(-4400);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Strafing");
+                telemetry.update();
+            }
+            setDriveMotors(0);
         }
         else if (goldPos == 'R') {
-            // DRIVE FORWARD 2500 ENCODER TICKS TO HIT MINERALS
-            stopResetDriveEncoders();
-            moveDriveEncoder(2500, 2500, .6);
+            // Drive Robot Forward 1000 Ticks To Bump Gold
+            moveDriveEncoder(1000, 1000, .5);
             while(driveMotorsBusy() && !isStopRequested()){
-                telemetry.addData("Status", "Driving Forward To TM Drop Off");
-                telemetry.addData("goldPos", goldPos);
+                telemetry.addData("Status", "Driving Forward");
                 telemetry.update();
             }
             setDriveMotors(0);
 
-            // DRIVE BACKWARD 2500 ENCODER TICKS TO MOVE AWAY
-            stopResetDriveEncoders();
-            moveDriveEncoder(-2500, -2500, .6);
+            // Drive Robot Backward 1000 Ticks Away From Gold
+            moveDriveEncoder(-1000, -1000, .5);
             while(driveMotorsBusy() && !isStopRequested()){
-                telemetry.addData("Status", "Driving Forward To TM Drop Off");
-                telemetry.addData("goldPos", goldPos);
+                telemetry.addData("Status", "Driving Backward");
                 telemetry.update();
             }
             setDriveMotors(0);
+
+            // Turn Towards Wall To Avoid Minerals
+            turnUntilAngle(90);
+
+            // Drive Robot Forward 4000 Ticks Towards Wall
+            moveDriveEncoder(5000, 5000, .5);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward");
+                telemetry.update();
+            }
+            setDriveMotors(0);
+
+            // Turn Right To Line Up With Wall
+            turnUntilAngle(45);
         }
-
-        // Reset Lift Motor To Original Size
-        // lowerLiftMotor();
     }
 }
