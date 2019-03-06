@@ -268,31 +268,30 @@ abstract public class Auto_Routines extends LinearOpMode {
         setDriveMotors(0);
     }
 
-    public void strafe(int encoderCount) {
+    public void strafe(int encoderCount, double speed) {
         stopResetDriveEncoders();
-        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        int pos = robot.frontLeftDrive.getCurrentPosition() + encoderCount;
 
-        robot.frontLeftDrive.setPower(.3);
-        robot.rearLeftDrive.setPower(-.3);
-        robot.frontRightDrive.setPower(-.3);
-        robot.rearRightDrive.setPower(.3);
+        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-//        while (driveMotorsBusy() && !isStopRequested()) {
-//            if (robot.frontLeftDrive.getCurrentPosition() < encoderCount) {
-//                robot.frontLeftDrive.setPower(.3);
-//                robot.rearLeftDrive.setPower(-.3);
-//                robot.frontRightDrive.setPower(-.3);
-//                robot.rearRightDrive.setPower(.3);
-//            } else if (robot.frontLeftDrive.getCurrentPosition() > encoderCount) {
-//                robot.frontLeftDrive.setPower(-.3);
-//                robot.rearLeftDrive.setPower(.3);
-//                robot.frontRightDrive.setPower(.3);
-//                robot.rearRightDrive.setPower(-.3);
-//            }
-//        }
+        robot.frontLeftDrive.setTargetPosition(pos);
+        robot.rearLeftDrive.setTargetPosition(-pos);
+        robot.frontRightDrive.setTargetPosition(-pos);
+        robot.rearRightDrive.setTargetPosition(pos);
+
+        robot.frontLeftDrive.setPower(speed);
+        robot.rearLeftDrive.setPower(speed);
+        robot.frontRightDrive.setPower(speed);
+        robot.rearRightDrive.setPower(speed);
+
+        while(driveMotorsBusy() && !isStopRequested()){
+            telemetry.addData("Status", "Strafing");
+            telemetry.update();
+        }
+        setDriveMotors(0);
     }
 
     public void deployArm(int encoderCount) {

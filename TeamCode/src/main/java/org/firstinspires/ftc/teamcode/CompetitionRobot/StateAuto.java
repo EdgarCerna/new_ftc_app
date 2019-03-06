@@ -59,25 +59,19 @@ public class StateAuto extends Auto_Routines {
             // Turn Right To Line Up With Wall
             turnUntilAngle(45);
 
-            // Drive Robot Forward 500 Ticks To Bump Wall
-            moveDriveEncoder(800, 800, .5);
+            // Drive Robot Forward 1100 Ticks To Bump Wall
+            moveDriveEncoder(1100, 1100, .5);
             while(driveMotorsBusy() && !isStopRequested()){
                 telemetry.addData("Status", "Driving Forward");
                 telemetry.update();
             }
             setDriveMotors(0);
 
-            deployArm(5000);
+            deployArm(5500);
 
             deployMarker();
 
-            strafe(-4400);
-            while(driveMotorsBusy() && !isStopRequested()){
-                telemetry.addData("Status", "Strafing");
-                telemetry.update();
-            }
-            setDriveMotors(0);
-
+            strafe(-4800, 0.4);
         }
         else if (goldPos == 'C') {
             // DRIVE BACKWARD 1000 ENCODER TICKS TO MOVE AWAY FROM MINERALS
@@ -104,24 +98,19 @@ public class StateAuto extends Auto_Routines {
             // Turn Right To Line Up With Wall
             turnUntilAngle(45);
 
-            // Drive Robot Forward 1000 Ticks Towards Wall
-            moveDriveEncoder(1000, 1000, .5);
+            // Drive Robot Forward 1500 Ticks Towards Wall
+            moveDriveEncoder(1500, 1500, .5);
             while(driveMotorsBusy() && !isStopRequested()){
                 telemetry.addData("Status", "Driving Forward");
                 telemetry.update();
             }
             setDriveMotors(0);
 
-            deployArm(5000);
+            deployArm(5300);
 
             deployMarker();
 
-            strafe(-4400);
-            while(driveMotorsBusy() && !isStopRequested()){
-                telemetry.addData("Status", "Strafing");
-                telemetry.update();
-            }
-            setDriveMotors(0);
+            strafe(-4700, 0.4);
         }
         else if (goldPos == 'R') {
             // Drive Robot Forward 1000 Ticks To Bump Gold
@@ -153,6 +142,20 @@ public class StateAuto extends Auto_Routines {
 
             // Turn Right To Line Up With Wall
             turnUntilAngle(45);
+
+            // Drive Robot Forward 1600 Ticks Towards Wall
+            moveDriveEncoder(1600, 1600, .5);
+            while(driveMotorsBusy() && !isStopRequested()){
+                telemetry.addData("Status", "Driving Forward");
+                telemetry.update();
+            }
+            setDriveMotors(0);
+
+            deployArm(5400);
+
+            deployMarker();
+
+            strafe(-4800, 0.4);
         }
     }
 }
