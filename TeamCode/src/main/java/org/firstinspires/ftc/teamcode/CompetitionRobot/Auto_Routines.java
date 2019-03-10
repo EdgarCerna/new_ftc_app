@@ -101,6 +101,12 @@ abstract public class Auto_Routines extends LinearOpMode {
         robot.rearLeftDrive.setPower(speed);
         robot.frontRightDrive.setPower(speed);
         robot.rearRightDrive.setPower(speed);
+
+        while(driveMotorsBusy() && !isStopRequested()){
+            telemetry.addData("Status", "Driving Using Encoders");
+            telemetry.update();
+        }
+        setDriveMotors(0);
     }
 
     public boolean driveMotorsBusy(){
@@ -236,38 +242,6 @@ abstract public class Auto_Routines extends LinearOpMode {
         } while (robot.angles.firstAngle > angle + 1 || robot.angles.firstAngle < angle - 1);
     }
 
-    public void turnRightUntilAngle(int angle) {
-        stopResetDriveEncoders();
-        robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rearLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rearRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        while (robot.angles.firstAngle != angle) {
-            if (robot.angles.firstAngle > angle) {
-                robot.frontLeftDrive.setPower(-.2);
-                robot.rearLeftDrive.setPower(-.2);
-                robot.frontRightDrive.setPower(.2);
-                robot.rearRightDrive.setPower(.2);
-            }
-            else if (robot.angles.firstAngle < angle) {
-                robot.frontLeftDrive.setPower(.2);
-                robot.rearLeftDrive.setPower(.2);
-                robot.frontRightDrive.setPower(-.2);
-                robot.rearRightDrive.setPower(-.2);
-            }
-
-            robot.angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-            telemetry.addData("firstAngle", robot.angles.firstAngle);
-            telemetry.update();
-
-        }
-        setDriveMotors(0);
-    }
-
     public void strafe(int encoderCount, double speed) {
         stopResetDriveEncoders();
         int pos = robot.frontLeftDrive.getCurrentPosition() + encoderCount;
@@ -307,20 +281,22 @@ abstract public class Auto_Routines extends LinearOpMode {
             robot.frontRightDrive.setPower(-.3);
             robot.rearRightDrive.setPower(.3);
 
-//            if (robot.frontLeftDrive.getCurrentPosition() < 1000)
-//                robot.armMotor.setPower(-0.6);
-//            else
-//                robot.armMotor.setPower(-0.2);
+            if (robot.frontLeftDrive.getCurrentPosition() < 1000)
+                if (robot.frontLeftDrive.getCurrentPosition() < 500)
+                    robot.armMotor.setPower(-0.6);
+                else
+                    robot.armMotor.setPower(-0.4);
+            else
+                robot.armMotor.setPower(-0.3);
         }
         setDriveMotors(0);
-//        robot.armMotor.setPower(0);
+        robot.armMotor.setPower(0);
     }
 
-    public void hoverArm(int ticks, double speed) {
-        int pos = robot.armMotor.getCurrentPosition() + ticks;
-        robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.armMotor.setTargetPosition(pos);
+    public void hoverArm(int time, double speed) {
         robot.armMotor.setPower(speed);
+        sleep(time);
+        robot.armMotor.setPower(0);
     }
 
     // NEEDS TO BE FINISHED
